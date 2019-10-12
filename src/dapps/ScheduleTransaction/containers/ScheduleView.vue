@@ -135,9 +135,8 @@
                     :key="index"
                     :class="['btn-group', bounty === timeBounty && 'selected']"
                     @click="timeBounty = bounty"
+                    >{{ bounty }}</b-button
                   >
-                    {{ bounty }}
-                  </b-button>
                 </b-button-group>
                 <div class="timebounty-gasprice-coverage">
                   Covers up to
@@ -195,9 +194,8 @@
                       :key="index"
                       :class="['mode-btn', mode === selectedMode && 'selected']"
                       @click="selectedMode = mode"
+                      >{{ mode.name }}</b-button
                     >
-                      {{ mode.name }}
-                    </b-button>
                   </b-button-group>
                 </div>
               </b-col>
@@ -628,40 +626,16 @@ export default {
       const notifications = this.notifications[this.account.address];
       const latestNotification = notifications[0];
 
-      if (latestNotification.hash) {
-        if (latestNotification.status === 'pending') {
-          const transaction = await this.web3.eth.getTransaction(
-            latestNotification.hash
-          );
-
-          try {
-            if (transaction === null) {
-              Toast.responseHandler(
-                new Error('Non-existing transaction detected'),
-                Toast.ERROR
-              );
-              return;
-            }
-
-            const isTokenTransfer = transaction.input.includes(
-              EAC_SCHEDULING_CONFIG.TOKEN_TRANSFER_METHOD_ID
-            );
-            this.$router.push({
-              name: 'Scheduled success',
-              params: {
-                txHash: latestNotification.hash,
-                isTokenTransfer,
-                selectedCurrency: isTokenTransfer
-                  ? this.selectedCurrency
-                  : null,
-                toAddress: transaction.to,
-                amount: this.amount
-              }
-            });
-          } catch (e) {
-            Toast.responseHandler(e, Toast.ERROR);
+      if (latestNotification.hash && latestNotification.status === 'pending') {
+        this.$router.push({
+          name: 'Scheduled success',
+          params: {
+            txHash: latestNotification.hash,
+            selectedCurrency: this.selectedCurrency,
+            isTokenTransfer: this.isTokenTransfer,
+            amount: this.amount
           }
-        }
+        });
       }
     },
     async selectedCurrency() {

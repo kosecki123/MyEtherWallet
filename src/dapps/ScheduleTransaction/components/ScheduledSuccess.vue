@@ -75,10 +75,6 @@ export default {
       type: Boolean,
       default: false
     },
-    toAddress: {
-      type: String,
-      default: ''
-    },
     amount: {
       type: String,
       default: ''
